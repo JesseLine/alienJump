@@ -2,40 +2,32 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed;
-    public float gravity;
-    public float jumpPower;
-    private Rigidbody2D rb2d;
+    private Rigidbody2D rb;
+    private BoxCollider2D coll;
+    private float direction = 0f;
+    private bool isGrounded = true;
 
-    public bool isGrounded = true;
+    [SerializeField]
+    private float moveSpeed = 7f;
 
-    void Start()
+    [SerializeField]
+    private float jumpSpeed = 14f;
+
+    private void Start()
     {
-        rb2d = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        //Jumping
-        float moveVertical = Input.GetAxis("Vertical");
-        if (Input.GetKeyDown(KeyCode.Space) || moveVertical > 0)
+        direction = Input.GetAxisRaw("Horizontal");
+        rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
+
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            if (isGrounded)
-            {
-                rb2d.linearVelocity = new Vector2(0, jumpPower);
-                isGrounded = false;
-            }
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpSpeed);
+            isGrounded = false;
         }
-
-
-    }
-    private void FixedUpdate()
-    {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
-
-        rb2d.linearVelocity = new Vector2(moveHorizontal * speed, 0);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
